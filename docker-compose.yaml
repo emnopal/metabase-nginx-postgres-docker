@@ -1,0 +1,63 @@
+version: "3.8"
+
+services:
+  postgres:
+    container_name: postgres-metabase
+    image: postgres:13
+    restart: always
+    env_file:
+      - ./config/postgres/postgres.env
+    volumes:
+      - metabase-db-data:/var/lib/postgresql/data/metabase
+      - ./config/postgres/:/docker-entrypoint-initdb.d/
+    ports:
+      - 5432:5432/tcp
+
+  pgadmin:
+    container_name: pgadmin-metabase
+    image: dpage/pgadmin4:latest
+    restart: always
+    volumes:
+      - metabase-pgadmin-data:/var/lib/pgadmin
+    ports:
+      - 5050:80/tcp
+    links:
+      - postgres:postgres
+    env_file:
+      - ./config/pgadmin/pgadmin.env
+    depends_on:
+      - postgres
+
+  metabase:
+    container_name: metabase
+    image: metabase/metabase
+    restart: always
+    ports:
+      - 3000:3000/tcp
+    volumes:
+      - metabase-data:/metabase-data
+    env_file:
+      - ./config/metabase/metabase.env
+    depends_on:
+      - postgres
+    links:
+      - postgres:postgres
+
+  nginx:
+    container_name: nginx-metabase
+    image: nginx:latest
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - metabase
+    restart: always
+    links:
+      - metabase:metabase
+
+volumes:
+  metabase-db-data:
+  metabase-data:
+  metabase-pgadmin-data:
