@@ -3,7 +3,7 @@ version: "3.8"
 services:
   postgres:
     container_name: postgres-metabase
-    image: postgres:13
+    image: postgres:latest
     restart: always
     env_file:
       - ./config/postgres/postgres.env
