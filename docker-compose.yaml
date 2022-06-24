@@ -13,21 +13,6 @@ services:
     ports:
       - 5432:5432
 
-  pgadmin:
-    container_name: pgadmin-metabase
-    image: dpage/pgadmin4:latest
-    restart: always
-    volumes:
-      - metabase-pgadmin-data:/var/lib/pgadmin
-    ports:
-      - 5050:80
-    links:
-      - postgres:postgres
-    env_file:
-      - ./config/pgadmin/pgadmin.env
-    depends_on:
-      - postgres
-
   metabase:
     container_name: metabase
     image: metabase/metabase
@@ -62,4 +47,3 @@ services:
 volumes:
   metabase-db-data:
   metabase-data:
-  metabase-pgadmin-data:
